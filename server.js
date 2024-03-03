@@ -24,17 +24,15 @@ io.on("connection", (socket) => {
   //the req that came from the client we are respoding
   socket.on("join-room", (roomid) => {
     //the user joins the room
+
     socket.join(roomid);
+    console.log("the room id is", roomid);
     //in this line we are requesting to the client.using roomid we select the specific room and with to we create a namesapce(so the user within the roomid can interact)
     //.the brodcast is used to tell all the user in the room that a new user has been connected.
-    socket.to(roomid).broadcast.emit("user-connected");
+    socket.broadcast.emit("user-connected");
   });
 });
 
 server.listen(3000, () => {
   console.log("app is runnig on port 3000");
 });
-
-//to do
-
-//serach for  socket.to(roomid).broadcast.emit("user-connected")
