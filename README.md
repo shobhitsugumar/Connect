@@ -1,2 +1,2 @@
 ### CONNECT APP 
-a Simpole video call app 
+A video call Website,Created using websocket and webrtc
