@@ -37,6 +37,15 @@ io.on("connection", (socket) => {
     //in this line we are requesting to the client.using roomid we select the specific room and with to we create a namesapce(so the user within the roomid can interact)
     //.the brodcast is used to tell all the user in the room that a new user has been connected.
     socket.broadcast.emit("user-connected", userid);
+    socket.on("message", (message) => {
+      io.to(roomid).emit("createMessage", message);
+    });
+
+    socket.on("leaveRoom", () => {
+      console.log("user left the room", roomid, "userid", userid);
+      socket.leave(roomid);
+      socket.broadcast.emit("user-left");
+    });
   });
 });
 
