@@ -1,2 +1,2 @@
-### MeetVerse App
-A video call Website,Created using websocket and webrtc
+### MeetVerse 
+A video call Website,Created using websocket(socketio) and webrtc(peerjs)
