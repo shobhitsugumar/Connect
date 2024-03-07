@@ -44,7 +44,7 @@ io.on("connection", (socket) => {
     socket.on("leaveRoom", () => {
       console.log("user left the room", roomid, "userid", userid);
       socket.leave(roomid);
-      socket.broadcast.emit("user-left");
+      socket.broadcast.emit("user-left", userid);
     });
   });
 });

@@ -1,4 +1,5 @@
 const socket = io("/");
+
 const videoGrid = document.getElementById("video-grid");
 
 const text = document.querySelector("input");
@@ -12,6 +13,8 @@ const peer = new Peer(undefined, {
   port: "3040",
 });
 
+const myvideoID = Math.random() * 10;
+
 let myVideoStream;
 const myvideo = document.createElement("video");
 myvideo.muted = true;
@@ -23,14 +26,15 @@ navigator.mediaDevices
   })
   .then((stream) => {
     myVideoStream = stream;
-    addVideoStream(myvideo, stream);
+    addVideoStream(myvideo, stream, myvideoID);
 
     //answer the incoming call
     peer.on("call", (call) => {
       call.answer(stream); // Answer the call with an A/V stream.
       const video = document.createElement("video");
+      const remoteUserId = call.peer;
       call.on("stream", (userVideoStream) => {
-        addVideoStream(video, userVideoStream);
+        addVideoStream(video, userVideoStream, remoteUserId);
       });
     });
 
@@ -47,25 +51,25 @@ peer.on("open", (id) => {
   socket.emit("join-room", ROOMID, id);
 });
 
+const userVideo = {};
 function connectToNewUser(userid, stream) {
   //Call another peer(ie another user) by calling peer.call with the peer ID of the destination peer.
   //When a peer calls you, the call event is emitted.
   //the Stream is my stream not the other user stream
   const call = peer.call(userid, stream);
   const video = document.createElement("video");
+  const videoid = userid;
+  console.log("video from the connected", video);
   //this stream is users stream
   call.on("stream", (userVideoStream) => {
-    addVideoStream(video, userVideoStream);
+    addVideoStream(video, userVideoStream, videoid);
   });
-  socket.on("user-left", () => {
-    call.on("close", () => {
-      video.remove();
-    });
-  });
+  userVideo[userid] = video;
 }
 
-function addVideoStream(video, stream) {
+function addVideoStream(video, stream, userid) {
   video.srcObject = stream;
+  video.id = `user-video-${userid}`;
   video.addEventListener("loadedmetadata", () => {
     video.play();
   });
@@ -132,7 +136,6 @@ const setUnmuteButton = () => {
 };
 
 const stopOnVideo = () => {
-  console.log(myVideoStream);
   const enabled = myVideoStream.getVideoTracks()[0].enabled;
   if (enabled) {
     myVideoStream.getVideoTracks()[0].enabled = false;
@@ -163,6 +166,8 @@ const setOnVideo = () => {
 };
 
 const leavemeeting = () => {
+  socket.emit("leaveRoom");
+
   const videoTracks = myVideoStream.getVideoTracks();
   videoTracks.forEach((tracks) => {
     tracks.stop();
@@ -171,8 +176,29 @@ const leavemeeting = () => {
   audioTracks.forEach((tracks) => {
     tracks.stop();
   });
-  socket.emit("leaveRoom");
+  const myVideoElement = document.getElementById(`user-video-${myvideoID}`);
+
+  myVideoElement.remove();
+
+  const otherUserVideoElements = document.querySelectorAll(
+    "video:not(#my-video)"
+  );
+  otherUserVideoElements.forEach((usersremove) => {
+    usersremove.remove();
+  });
 };
 
 const leaveMeetingButton = document.querySelector(".leave");
 leaveMeetingButton.addEventListener("click", leavemeeting);
+
+socket.on("user-left", (userid) => {
+  removeUserVideo(userid);
+});
+
+function removeUserVideo(userid) {
+  const videoElement = document.getElementById(`user-video-${userid}`);
+
+  if (videoElement) {
+    videoElement.remove();
+  }
+}

@@ -28,7 +28,9 @@ video {
 
 .main__videos {
   flex-grow: 1;
-  background-color: black;
+  background-image: url("/img/ceramic.avif");
+  background-size: cover;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -39,7 +41,7 @@ video {
   background-color: #1c1e20;
   color: white;
   padding: 5px;
-  justify-content: space-between;
+  justify-content: center;
 }
 .main__controls__block {
   display: flex;
