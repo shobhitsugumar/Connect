@@ -1,7 +1,7 @@
 # MeetVerse 
 A video call Website Created using [Socket.io](https://socket.io/) and [Peerjs](https://peerjs.com/docs/#start)
 
-- This project is a video call website built using PeerJS for peer-to-peer communication and SocketJS for real-time messaging. It allows users to initiate video calls with others, share their screens, and communicate via chat during the call.
+- This project is a video call website built using PeerJS for peer-to-peer communication and SocketJS for real-time messaging. It allows users to initiate video calls with others and communicate via chat during the call.
 
 ## Table of Contents
 
